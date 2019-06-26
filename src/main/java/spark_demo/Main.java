@@ -5,13 +5,17 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.storage.StorageLevel;
+
+
 import scala.Tuple2;
-import scala.Tuple3;
 import spark_demo.model.Driver;
 import spark_demo.model.Trip;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static java.util.Arrays.asList;
+
 
 /**
  * @author Evgeny Borisov
@@ -59,6 +63,19 @@ public class Main {
                 .take(3)
                 .forEach(System.out::println);
 
+        JavaRDD<String> songRdd = sc.parallelize(asList("java java scala", "scala java"));
+
+
+        List<String> myList = songRdd
+                .flatMap(s -> asList(s.split(" ")))
+
+                .mapToPair(word -> new Tuple2<>(word, 1))
+                .reduceByKey(Integer::sum)
+                .mapToPair(Tuple2::swap)
+                .sortByKey(false)
+                .map(Tuple2::_2)
+                .take(3);
+        myList.forEach(System.out::println);
 
 /*
 

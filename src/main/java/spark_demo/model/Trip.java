@@ -15,6 +15,7 @@ public class Trip implements Serializable {
     private String id;
     private String city;
     private int km;
+    private int price;
 
     public Trip(String line){
         String[] arr = line.split(" ");
