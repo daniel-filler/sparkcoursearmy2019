@@ -10,6 +10,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.18.8" level="project" />
     <orderEntry type="library" name="Maven: org.apache.spark:spark-sql_2.10:1.6.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.spark:spark-catalyst_2.10:1.6.1" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang:scala-reflect:2.10.5" level="project" />
