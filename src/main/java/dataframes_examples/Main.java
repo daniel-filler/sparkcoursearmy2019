@@ -3,9 +3,7 @@ package dataframes_examples;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.*;
-import org.apache.spark.sql.types.StructField;
-import org.apache.spark.sql.types.StructType;
-
+import java.util.Arrays;
 import static org.apache.spark.sql.functions.*;
 
 /**
@@ -20,40 +18,32 @@ public class Main {
 
         DataFrame dataFrame = sqlContext.read().json("data/linkedIn/*");
 
-//        dataFrame.filter(col("age").leq(40))
-//        dataFrame.filter(array_contains(col("keywords"),"spring"))
-        //dataFrame = dataFrame.withColumn("2", size(col("keywords"))).select("2");
-//        dataFrame = dataFrame.withColumn("2", explode(col("keywords"))).select("2");
+        dataFrame.printSchema();
+
+        System.out.println(Arrays.toString(dataFrame.dtypes()));
+        dataFrame = dataFrame
+                .withColumn("salary",
+                        col("age")
+                        .multiply(size(col("keywords")))
+                        .multiply(when(col("age").leq(30), 5).otherwise(10)));
+
         dataFrame.show();
 
-        StructType schema = dataFrame.schema();
-        System.out.println("schema = " + schema);
+        String topTechnology = dataFrame
+                .withColumn("technology", explode(col("keywords")))
+                .select("technology")
+                .groupBy("technology")
+                .count()
+                .sort(col("count")
+                        .desc())
+                .head()
+                .getAs("technology");
 
-        StructField[] fields = schema.fields();
-        for (StructField field : fields) {
-            System.out.println(field.dataType());
-        }
-        dataFrame = dataFrame.withColumn("salary", col("age").multiply(10).multiply(size(col("keywords"))));
-
-        dataFrame.withColumn("technology", explode(col("keywords"))).select("technology").groupBy("technology").count().sort(col("count").desc()).take(1);
-
-
-
-//        dataFrame.show();
-//        dataFrame.withColumn("number of technologies")
-
-
-
-
-
-
-
-//
-//        Row[] rows = dataFrame.take(5);
-//        for (Row row : rows) {
-//            String name = row.getAs("name");
-//            System.out.println("name = " + name);
-//        }
+        dataFrame
+                .filter(col("salary")
+                        .leq(1200))
+                .filter(array_contains(col("keywords"), topTechnology))
+                .show();
 
 
     }
